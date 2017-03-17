@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script type="text/javascript">
+
+      window.onload = function setDates(){
+        var today = new Date();
+        var today = today.toISOString().split('T')[0]
+        document.getElementById("endDate").value = today; 
+        document.getElementById("endDate").max = today;
+        document.getElementById("endDateC").value = today; 
+        document.getElementById("endDateC").max = today;
+      }
+    </script>
+
+  </head>
+  <body>
+    <h1><%= title %></h1><br><br>
+    <!--<img src="images/output.png" alt="Plot"> -->
+    <!--<a href="/seleccionarFiltro"> Seleccionar Filtro</a> -->
+    <h2>Seleccione la fecha que desea consultar </h2> <br><br>
+
+    <form class="center" action="/filtrarPorFechaEncuestas" method="POST">
+      Entre:
+      <input id="startDate" type="date" name="startDate">
+      Y
+      <input id="endDate" type="date" name="endDate">
+      <br>
+      <br>
+      <input type="submit" value="Consultar">
+    </form>
+
+    <br><br><br>
+    <h2>Consultar comentarios</h2>
+    <h2>Seleccione la fecha que desea consultar </h2>
+    <form class="center" action="/getComentarios" method="POST">
+      Entre:
+      <input id="startDateC" type="date" name="startDateC">
+      Y
+      <input id="endDateC" type="date" name="endDateC">
+      <br>
+      <br>
+      <input type="submit" value="Consultar">
+    </form>
+
+  </body>
+</html>

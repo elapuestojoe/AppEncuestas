@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<title> Titulo </title>
+  </head>
+
+  <body>
+  	<p> Ver comentarios </p>
+  	<ul>
+		<% for(var i=0; i<encuestasFiltradasComentarios.length; i++) {%>
+   			<li>
+   				<%= encuestasFiltradasComentarios[i].nombreCliente %>,
+   				Promedio Encuesta: <%= encuestasFiltradasComentarios[i].promedioEncuesta %>
+   				<form action="/verComentarios" method="POST">
+				      <input 
+				      	type="hidden"
+				      	name="comentarios",
+				      	value=<%- JSON.stringify(encuestasFiltradasComentarios[i].comentarios)%>>
+				      <input type="submit" value="Consultar">
+			    </form>
+   			</li>
+		<% } %>
+	</ul>
+  </body>
+</html>

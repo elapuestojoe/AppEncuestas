@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Reporte </title>
+    <link rel='stylesheet' href='/stylesheets/estiloReporte.css' />
+
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      // Load the Visualization API and the corechart package.
+      google.charts.load('current', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      //google.charts.setOnLoadCallback(drawChart);
+      google.charts.setOnLoadCallback(function() {
+      	drawPieChart(
+      		<%- JSON.stringify(arrGraficos) %>,										//Data
+      		"Encuestas por modalidad "+ <%- JSON.stringify(strRango) %>,			//Titulo
+      		'Tipo Encuesta',														//X titulo
+      		'Número aplicadas',														//Y titulo
+      		'chart_div'																//Div name
+      	)});
+
+      google.charts.setOnLoadCallback(drawChart2);
+      google.charts.setOnLoadCallback(drawChart3);
+      google.charts.setOnLoadCallback(drawComboChartDN);
+
+      google.charts.setOnLoadCallback(function() {drawChartCG(0)});
+      google.charts.setOnLoadCallback(function() {drawChartCG(1)});
+      google.charts.setOnLoadCallback(function() {drawChartCG(2)});
+      google.charts.setOnLoadCallback(drawChartSG);
+      google.charts.setOnLoadCallback(drawChartESPFuturas);
+	  google.charts.setOnLoadCallback(drawChartAdquirirSG);
+
+
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+
+    function drawPieChart(dataArray, title, xTitle, yTitle, divName) {
+      	// Create the data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', xTitle);
+        data.addColumn('number', yTitle);
+        
+        // ESTO SE DEBE SUBIR
+        //var arr = <%- JSON.stringify(arrGraficos) %>
+        var arr = dataArray;
+        data.addRows(arr);
+        
+        //var strRango = <%- JSON.stringify(strRango) %>
+        var tituloGrafico = title;
+        // if(<%- JSON.stringify(tituloGrafico)%>) {
+        //     tituloGrafico = <%- JSON.stringify(tituloGrafico)%>
+        // }
+        // Set chart options
+        var options = {'title':tituloGrafico,
+                        'sliceVisibilityThreshold':0,
+                       'width':800,
+                       'height':600};
+        
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.PieChart(document.getElementById(divName));
+        
+        chart.view = {'columns': [0, 1]};
+        chart.draw(data, options);
+    }
+
+    function drawChartCG(numCG) {
+  		//var numCG = 1
+        // Create the data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Tipo Encuesta');
+        data.addColumn('number', 'Respuesta');
+        
+        var arr = <%- JSON.stringify(CG) %>
+
+        var arrLimpio = arr[numCG];
+        var arrRes = []
+        //Parseo rapido para que sea compatible
+
+        for(key in arrLimpio) {
+        	arrRes.push([key, arrLimpio[key]]);
+        }
+
+        data.addRows(arrRes);
+        
+        var strRango = <%- JSON.stringify(strRango) %>
+
+        var preguntas = ["¿Volvería a comprar nuestros servicios?", 
+        				"¿Recomendaría nuestros servicios?", 
+        				"¿Podríamos utilizar su testimonio?"];
+
+        var tituloGrafico = preguntas[numCG];
+        if(<%- JSON.stringify(tituloGrafico)%>) {
+            tituloGrafico = <%- JSON.stringify(tituloGrafico)%>
+        }
+        // Set chart options
+        var options = {'title':tituloGrafico,
+                        'sliceVisibilityThreshold':0,
+                       'width':800,
+                       'height':600};
+        
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.PieChart(document.getElementById('chartCG_div'+numCG));
+        var div = document.getElementById('chartCG_div'+numCG);
+
+        google.visualization.events.addListener(chart, 'ready', function () {
+      		div.innerHTML = '<img src="' + chart.getImageURI() + '">';
+    	});
+        
+        chart.view = {'columns': [0, 1]};
+        chart.draw(data, options);
+      }
+
+      function drawChart2() {
+        // Create the data table.
+        // var data = new google.visualization.DataTable();
+        // data.addColumn('string', 'Tipo Encuesta');
+        // data.addColumn('number', 'Numero aplicadas');
+        // data.addColumn('string', 's');
+
+        var data = google.visualization.arrayToDataTable([
+        ['Tipo encuesta', "Promedio", { role: 'style' } ],
+        //Esta parte es algo complicada,
+        //Debemos agregar una fila para que google reconozca la estructura de los datos, sin embargo
+        //Los datos son dinámicos ya que vienen como parámetro de la página pasada,
+        //Además de eso, se debe agregar un color para cada columna
+        //La solución es agregar una fila DEMO y al final de este proceso eliminarla
+        //Para que el API de google reconozca el formato en el que vienen los datos dinámicos 
+        //A través de pattern matching la fila demo que 
+        ["FilaDemo", 0, '#b87333']
+        ]);
+
+        var arr = <%- JSON.stringify(promedioEncuestasPorTipo) %>
+        console.log(arr);
+        for (var i = arr.length - 1; i >= 0; i--) {
+        	console.log(arr[i]);
+        	var elemento = arr[i]
+        	// Random hex color generator
+        	elemento[2] = ('#'+Math.floor(Math.random()*16777215).toString(16));
+        };
+        data.addRows(arr);
+
+        data.removeRow(0);
+
+        var strRango = <%- JSON.stringify(strRango) %>
+        var tituloGrafico = "Promedio por modalidad " + strRango;
+        if(<%- JSON.stringify(tituloGrafico)%>) {
+            tituloGrafico = <%- JSON.stringify(tituloGrafico)%>
+        }
+        // Set chart options
+        var options = {	'title':tituloGrafico,
+                        'sliceVisibilityThreshold':0,
+                       	'width':1000,
+                       	'height':600,
+                   		'legend': {'position': 'none'},
+                   		"vAxis": { 
+    						"viewWindowMode":'explicit',
+    						"viewWindow": {
+        						"max":5,
+        						"min":0
+    							}
+							}
+                		}
+
+        
+        // Instantiate and draw our chart, passing in some options.
+
+
+        //Esto para habilitar la grafica en modo imprimir
+         var chart = new google.visualization.ColumnChart(document.getElementById('chart2_div'));
+     //    var div = document.getElementById('chart2_div');
+
+     //    google.visualization.events.addListener(chart, 'ready', function () {
+     //  		div.innerHTML = '<img src="' + chart.getImageURI() + '">';
+    	// });
+
+        chart.view = {'columns': [0, 1]};
+        chart.draw(data, options);     	
+      }
+
+      function drawChart3() {
+        // Create the data table.
+        // var data = new google.visualization.DataTable();
+        // data.addColumn('string', 'Tipo Encuesta');
+        // data.addColumn('number', 'Numero aplicadas');
+        // data.addColumn('string', 's');
+
+        var data = google.visualization.arrayToDataTable([
+        ['Tipo encuesta', "Promedio Encuesta", { role: 'style' } ],
+        //Esta parte es algo complicada,
+        //Debemos agregar una fila para que google reconozca la estructura de los datos, sin embargo
+        //Los datos son dinámicos ya que vienen como parámetro de la página pasada,
+        //Además de eso, se debe agregar un color para cada columna
+        //La solución es agregar una file DEMO y al final de este proceso eliminarla
+        ["FilaDemo", 0, '#b87333']
+        ]);
+
+        var arr = <%- JSON.stringify(muchasEncuestas) %>
+        console.log(arr);
+        for (var i = arr.length - 1; i >= 0; i--) {
+        	console.log(arr[i]);
+        	var elemento = arr[i]
+        	// Random hex color generator
+        	elemento[2] = ('#'+Math.floor(Math.random()*16777215).toString(16));
+        };
+        data.addRows(arr);
+
+        data.removeRow(0);
+
+        var strRango = <%- JSON.stringify(strRango) %>
+        var tituloGrafico = "Promedio General " + strRango;
+        if(<%- JSON.stringify(tituloGrafico)%>) {
+            tituloGrafico = <%- JSON.stringify(tituloGrafico)%>
+        }
+        // Set chart options
+        var options = {	'title':tituloGrafico,
+                        'sliceVisibilityThreshold':0,
+                       	'width':1000,
+                       	'height':80*arr.length,
+                   		'legend': {'position': 'none'},
+                   		"hAxis": { 
+    						"viewWindowMode":'explicit',
+    						"viewWindow": {
+        						"max":5,
+        						"min":0
+    							}
+							},		
+                		"vAxis" : {
+                			"textStyle" : {
+                				"fontSize": 8
+                			}
+                		}
+                	}
+        
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.BarChart(document.getElementById('chart3_div'));
+        
+     //    var div = document.getElementById('chart3_div');
+
+     //    google.visualization.events.addListener(chart, 'ready', function () {
+     //  		div.innerHTML = '<img src="' + chart.getImageURI() + '">';
+    	// });
+
+        chart.view = {'columns': [0, 1]};
+        chart.draw(data, options);     	
+      }
+
+      function drawComboChartDN() {
+        // Some raw data (not necessarily accurate)
+        var data = google.visualization.arrayToDataTable([
+         ['DN', 'AMS', 'Capacitacion','Cloud', 'Consultoria', 'Producto', 'Solution Center', 'Staffing'],
+         ['DN1',  100, 165,      938,         522,             998,           450,      614.6]
+      	]);
+
+        var arr = <%- JSON.stringify(arrCombo) %>
+        data.addRows(arr)
+
+        data.removeRow(0);
+
+        var strRango = <%- JSON.stringify(strRango) %>
+	    var options = {
+	      title : 'Encuestas aplicadas por modalidad y DN '+ strRango,
+	      vAxis: {title: 'Promedio Encuestas'},
+	      hAxis: {title: 'Direccion de negocio'},
+	      seriesType: 'bars',
+	      //series: {5: {type: 'line'}} //Se usa para linea
+	    };
+
+    	var chart = new google.visualization.ComboChart(document.getElementById('comboChartDN_div'));
+    	chart.draw(data, options);
+  	}
+
+      function drawChartSG() {
+        // Create the data table.
+        // var data = new google.visualization.DataTable();
+        // data.addColumn('string', 'Tipo Encuesta');
+        // data.addColumn('number', 'Numero aplicadas');
+        // data.addColumn('string', 's');
+
+        var data = google.visualization.arrayToDataTable([
+        ['Tipo encuesta', "Porcentaje", { role: 'style' } ],
+        //Esta parte es algo complicada,
+        //Debemos agregar una fila para que google reconozca la estructura de los datos, sin embargo
+        //Los datos son dinámicos ya que vienen como parámetro de la página pasada,
+        //Además de eso, se debe agregar un color para cada columna
+        //La solución es agregar una fila DEMO y al final de este proceso eliminarla
+        //Para que el API de google reconozca el formato en el que vienen los datos dinámicos 
+        //A través de pattern matching la fila demo que 
+        ["FilaDemo", 0, '#b87333']
+        ]);
+
+        var arr = <%- JSON.stringify(arrSG) %>
+        console.log(arr);
+        for (var i = arr.length - 1; i >= 0; i--) {
+        	console.log(arr[i]);
+        	var elemento = arr[i]
+        	// Random hex color generator
+        	elemento[2] = ('#'+Math.floor(Math.random()*16777215).toString(16));
+        };
+        data.addRows(arr);
+
+        data.removeRow(0);
+
+        var strRango = <%- JSON.stringify(strRango) %>
+        var tituloGrafico = "Servicios Futuros " + strRango;
+        if(<%- JSON.stringify(tituloGrafico)%>) {
+            tituloGrafico = <%- JSON.stringify(tituloGrafico)%>
+        }
+        // Set chart options
+        var options = {	'title':tituloGrafico,
+                        'sliceVisibilityThreshold':0,
+                       	'width':900,
+                       	'height':600,
+                   		'legend': {'position': 'none'},
+                   		"vAxis": { 
+    						"viewWindowMode":'explicit',
+    						"viewWindow": {
+        						"max":100,
+        						"min":0
+    							}
+							}
+                		}
+
+        
+        // Instantiate and draw our chart, passing in some options.
+
+
+        //Esto para habilitar la grafica en modo imprimir
+        var chart = new google.visualization.ColumnChart(document.getElementById('chartSG_div'));
+     //    var div = document.getElementById('chartSG_div');
+
+     //    google.visualization.events.addListener(chart, 'ready', function () {
+     //  		div.innerHTML = '<img src="' + chart.getImageURI() + '">';
+    	// });
+
+        chart.view = {'columns': [0, 1]};
+        chart.draw(data, options);     	
+    }
+
+    function drawChartESPFuturas() {
+
+        // Create the data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Tipo Encuesta');
+        data.addColumn('number', 'Numero aplicadas');
+        
+        var arr = <%- JSON.stringify(arrEspecialidadesFuturas) %>
+        data.addRows(arr);
+        
+        var strRango = <%- JSON.stringify(strRango) %>
+        var tituloGrafico = "Especialidades ";
+        if(<%- JSON.stringify(tituloGrafico)%>) {
+            tituloGrafico = <%- JSON.stringify(tituloGrafico)%>
+        }
+        // Set chart options
+        var options = {'title':tituloGrafico,
+                        'sliceVisibilityThreshold':0,
+                       'width':800,
+                       'height':600};
+        
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.PieChart(document.getElementById('chartESPFuturas_div'));
+        
+        var div = document.getElementById('chartESPFuturas_div');
+
+        google.visualization.events.addListener(chart, 'ready', function () {
+      		div.innerHTML = '<img src="' + chart.getImageURI() + '">';
+    	});
+
+        chart.view = {'columns': [0, 1]};
+        chart.draw(data, options);
+    }
+
+    function drawChartAdquirirSG() {
+
+        // Create the data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Tipo Encuesta');
+        data.addColumn('number', 'Numero aplicadas');
+        
+        var arr = <%- JSON.stringify(arrAdquirirSG) %>
+        data.addRows(arr);
+        
+        var strRango = <%- JSON.stringify(strRango) %>
+        var tituloGrafico = "Las adquiriria con nosotros ";
+        if(<%- JSON.stringify(tituloGrafico)%>) {
+            tituloGrafico = <%- JSON.stringify(tituloGrafico)%>
+        }
+        // Set chart options
+        var options = {'title':tituloGrafico,
+                        'sliceVisibilityThreshold':0,
+                       'width':800,
+                       'height':600};
+        
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.PieChart(document.getElementById('chartADSG_div'));
+        
+        chart.view = {'columns': [0, 1]};
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <!--<h1><%= title %></h1> --> 
+    <h1>Reporte</h1>
+    <br><br>
+    <br><br>
+    <table>
+    	<tr> 
+    		<th></th>
+    		<th>Promedio General</th>
+    		<th>Encuestas Aplicadas</th>
+    	</tr>
+    	<tr>
+    		<td> <%= strRango %></td>
+    		<td> <%= promedioFiltrado %></td>
+    		<td> <%= encuestasFiltradas.length %> </td>
+    	</tr>
+    	<tr>
+    		<td> Acumulado </td>
+    		<td> <%= promedioTotal %> </td>
+    		<td> <%= allEncuestas.length %> </td>
+    	</tr>
+    </table>
+
+    <div class="center" id="chart_div"></div>
+
+    <div class="centerBar" id="chart2_div"></div>
+
+    <div class="centerBar" id="chart3_div"></div>
+
+    <div class="center" id="comboChartDN_div" style="width: 1000px; height: 700px;"></div>
+
+    <h3> Comentarios Generales </h3>
+
+    <div class="center" id="chartCG_div0"></div>
+
+    <div class="center" id="chartCG_div1"></div>
+
+    <div class="center" id="chartCG_div2"></div>
+
+    <div class="centerBar" id="chartSG_div"></div>
+
+    <div class="center" id="chartESPFuturas_div"></div>
+
+    <div class="center" id="chartADSG_div"></div>
+
+
+  </body>
+</html>

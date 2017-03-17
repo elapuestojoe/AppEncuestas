@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Reporte </title>
+    <link rel='stylesheet' href='/stylesheets/estiloReporte.css' />
+
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      // Load the Visualization API and the corechart package.
+      google.charts.load('current', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.charts.setOnLoadCallback(drawChart);
+      google.charts.setOnLoadCallback(drawChart2);
+      google.charts.setOnLoadCallback(drawChart3);
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+
+      function getChartData() {
+
+      }
+      function drawChart() {
+
+        // Create the data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Tipo Encuesta');
+        data.addColumn('number', 'Numero aplicadas');
+        
+        var arr = <%- JSON.stringify(arrGraficos) %>
+        data.addRows(arr);
+        
+        var tituloGrafico = "TituloGenerico";
+        if(<%- JSON.stringify(tituloGrafico)%>) {
+            tituloGrafico = <%- JSON.stringify(tituloGrafico)%>
+        }
+        // Set chart options
+        var options = {'title':tituloGrafico,
+                        'sliceVisibilityThreshold':0,
+                       'width':800,
+                       'height':600};
+        
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        
+        chart.view = {'columns': [0, 1]};
+        chart.draw(data, options);
+      }
+
+      function drawChart2() {
+        // Create the data table.
+        // var data = new google.visualization.DataTable();
+        // data.addColumn('string', 'Tipo Encuesta');
+        // data.addColumn('number', 'Numero aplicadas');
+        // data.addColumn('string', 's');
+
+        var data = google.visualization.arrayToDataTable([
+        ['Tipo encuesta', "Numero aplicadas", { role: 'style' } ],
+        //Esta parte es algo complicada,
+        //Debemos agregar una fila para que google reconozca la estructura de los datos, sin embargo
+        //Los datos son dinámicos ya que vienen como parámetro de la página pasada,
+        //Además de eso, se debe agregar un color para cada columna
+        //La solución es agregar una file DEMO y al final de este proceso eliminarla
+        ["FilaDemo", 0, '#b87333']
+        ]);
+
+        var arr = <%- JSON.stringify(arrGraficos) %>
+        console.log(arr);
+        for (var i = arr.length - 1; i >= 0; i--) {
+        	console.log(arr[i]);
+        	var elemento = arr[i]
+        	// Random hex color generator
+        	elemento[2] = ('#'+Math.floor(Math.random()*16777215).toString(16));
+        };
+        data.addRows(arr);
+
+        data.removeRow(0);
+        var tituloGrafico = "TituloGenerico";
+        if(<%- JSON.stringify(tituloGrafico)%>) {
+            tituloGrafico = <%- JSON.stringify(tituloGrafico)%>
+        }
+        // Set chart options
+        var options = {'title':tituloGrafico,
+                        'sliceVisibilityThreshold':0,
+                       'width':800,
+                       'height':600};
+        
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart2_div'));
+        
+        chart.view = {'columns': [0, 1]};
+        chart.draw(data, options);     	
+      }
+      function drawChart3() {
+        // Create the data table.
+        // var data = new google.visualization.DataTable();
+        // data.addColumn('string', 'Tipo Encuesta');
+        // data.addColumn('number', 'Numero aplicadas');
+        // data.addColumn('string', 's');
+
+        var data = google.visualization.arrayToDataTable([
+        ['Tipo encuesta', "Promedio Encuesta", { role: 'style' } ],
+        //Esta parte es algo complicada,
+        //Debemos agregar una fila para que google reconozca la estructura de los datos, sin embargo
+        //Los datos son dinámicos ya que vienen como parámetro de la página pasada,
+        //Además de eso, se debe agregar un color para cada columna
+        //La solución es agregar una file DEMO y al final de este proceso eliminarla
+        ["FilaDemo", 0, '#b87333']
+        ]);
+
+        var arr = <%- JSON.stringify(muchasEncuestas) %>
+        console.log(arr);
+        for (var i = arr.length - 1; i >= 0; i--) {
+        	console.log(arr[i]);
+        	var elemento = arr[i]
+        	// Random hex color generator
+        	elemento[2] = ('#'+Math.floor(Math.random()*16777215).toString(16));
+        };
+        data.addRows(arr);
+
+        data.removeRow(0);
+        var tituloGrafico = "TituloGenerico";
+        if(<%- JSON.stringify(tituloGrafico)%>) {
+            tituloGrafico = <%- JSON.stringify(tituloGrafico)%>
+        }
+        // Set chart options
+        var options = {'title':tituloGrafico,
+                        'sliceVisibilityThreshold':0,
+                       'width':1000,
+                       'height':3200};
+        
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.BarChart(document.getElementById('chart3_div'));
+        
+        chart.view = {'columns': [0, 1]};
+        chart.draw(data, options);     	
+      }
+    </script>
+  </head>
+  <body>
+    <!--<h1><%= title %></h1> --> 
+    <h1>Reporte</h1>
+    <br><br>
+    <h2>Promedio General</h2>
+
+    <div class="pieChart" id="chart_div"></div>
+
+    <br><br> 
+
+    <div class="barChart" id="chart2_div"></div>
+
+    <div class="barChart" id="chart3_div"><div>
+  </body>
+</html>

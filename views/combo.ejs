@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<title> Combo </title>
+  	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawVisualization);
+
+
+    function drawVisualization() {
+        // Some raw data (not necessarily accurate)
+        var data = google.visualization.arrayToDataTable([
+         ['DN', 'AMS', 'Capacitacion','Cloud', 'Consultoria', 'Producto', 'Solution Center', 'Staffing'],
+         ['DN1',  100, 165,      938,         522,             998,           450,      614.6]
+         // ['DN2',  135,      1120,        599,             1268,          288,      682],
+         // ['DN3',  157,      1167,        587,             807,           397,      623],
+         // ['DN4',  139,      1110,        615,             968,           215,      609.4],
+         // ['DN5',  136,      691,         629,             1026,          366,      569.6]
+      	]);
+
+        var arr = <%- JSON.stringify(arrCombo) %>
+        data.addRows(arr)
+
+        data.removeRow(0);
+
+	    var options = {
+	      title : 'Encuestas aplicadas por modalidad y DN',
+	      vAxis: {title: 'Promedio Encuestas'},
+	      hAxis: {title: 'Direccion de negocio'},
+	      seriesType: 'bars',
+	      //series: {5: {type: 'line'}} //Se usa para linea
+	    };
+
+    	var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+    	chart.draw(data, options);
+  	}
+    </script>
+  </head>
+  <body>
+  	<div id="chart_div" style="width: 1200px; height: 700px;"></div>
+  </body>
+</body>
