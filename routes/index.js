@@ -581,6 +581,6 @@ router.post("/verComentarios", function(request, response) {
 });
 
 router.get("/appredirect", function(request, response) {
-  response.redirect("http://google.com");
+  response.redirect("https://www.google.com.mx/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0ahUKEwiukp6q6NzSAhXE34MKHbXzDh0QFggbMAA&url=https%3A%2F%2Fitunes.apple.com%2Fmx%2Fapp%2Fgodinez-adventure%2Fid1068615555%3Fmt%3D8&usg=AFQjCNGlCzZDjeHFLGBAZ-nDmdu9kAQy5Q&sig2=Rjct8U2pNHGAsK5YdxsMdw");
 })
 module.exports = router;
