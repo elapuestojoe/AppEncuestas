@@ -20,6 +20,8 @@ var endDate;
 
 var startDateC;
 var endDateC;
+
+var encuestasFiltradasGlobal;
 // grab the packages we need
 // var mongoose = require('mongoose');
 
@@ -565,9 +567,8 @@ function generarReporteComentarios(startDate, endDate, response) {
     utilities.filterEncuestasByDate(startDate, endDate, allEncuestas).then(result => {
 
       var encuestasFiltradasFecha = result;
-
       var encuestasFiltradasComentarios = utilities.filtrarPorComentarios(encuestasFiltradasFecha);
-
+      encuestasFiltradasGlobal = encuestasFiltradasComentarios;
       response.render("getComentarios", {
         encuestasFiltradasComentarios : encuestasFiltradasComentarios
       });
@@ -576,7 +577,7 @@ function generarReporteComentarios(startDate, endDate, response) {
 }
 
 router.post("/verComentarios", function(request, response) {
-  var jsonComentarios = JSON.parse(request.body.comentarios);
+  var jsonComentarios = encuestasFiltradasGlobal[parseInt(request.body.eIndex)].comentarios;
   response.render("verComentarios", {jsonComentarios : jsonComentarios});
 });
 

@@ -14,8 +14,8 @@
    				<form action="/verComentarios" method="POST">
 				      <input 
 				      	type="hidden"
-				      	name="comentarios",
-				      	value=<%- JSON.stringify(encuestasFiltradasComentarios[i].comentarios)%>>
+				      	name="eIndex",
+				      	value=<%- i%>>
 				      <input type="submit" value="Consultar">
 			    </form>
    			</li>
